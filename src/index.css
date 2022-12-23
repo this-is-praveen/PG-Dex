@@ -33,6 +33,6 @@
   min-height: 100vh;
 }
 
-.u-bounce {
-  animation: bounce 1000ms infinite;
+.infinite-scroll-component__outerdiv {
+  width: 100%;
 }
