@@ -132,8 +132,10 @@ const App = () => {
 
   return (
     <div className={"flex flex-col w-full m-auto"}>
-      <div className="flex justify-between items-center mx-5 mb-8 ">
-        <div className={`${classes["page_title"]} ${classes["card_name"]}`}>
+      <div className="flex flex-col md:flex-row justify-between items-center mx-1 mb-2 md:mx-5 md:mb-8 ">
+        <div
+          className={`${classes["page_title"]} ${classes["card_name"]} mb-4 md:mb-0`}
+        >
           PG DEX
         </div>
         {SearchBar}
@@ -175,13 +177,16 @@ const Card = ({ data }: { data: IPokemonResult }) => {
   }, []);
 
   const types = pokemonData?.types || [];
-  const color1 = PokemonTypeColors[types?.[0]?.type?.name as PokemonTypeColorKey];
-  const color2 = PokemonTypeColors[types?.[1]?.type?.name as PokemonTypeColorKey] || "transparent";
+  const color1 =
+    PokemonTypeColors[types?.[0]?.type?.name as PokemonTypeColorKey];
+  const color2 =
+    PokemonTypeColors[types?.[1]?.type?.name as PokemonTypeColorKey] ||
+    "transparent";
   return (
     <div
       className={
         classes["card"] +
-        " flex m-2 flex-col basis-3/12 transform transition duration-500 hover:scale-105"
+        " flex m-2 flex-col lg:basis-3/12 md:basic-5/12 basis-11/12 transform transition duration-500 hover:scale-105"
       }
       style={{
         background: `radial-gradient(circle, ${color1} 0%, ${color2} 100%)`,
