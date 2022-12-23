@@ -175,8 +175,8 @@ const Card = ({ data }: { data: IPokemonResult }) => {
   }, []);
 
   const types = pokemonData?.types || [];
-  const color1 = PokemonTypeColors[types?.[0]?.type?.name];
-  const color2 = PokemonTypeColors[types?.[1]?.type?.name] || "transparent";
+  const color1 = PokemonTypeColors[types?.[0]?.type?.name as PokemonTypeColorKey];
+  const color2 = PokemonTypeColors[types?.[1]?.type?.name as PokemonTypeColorKey] || "transparent";
   return (
     <div
       className={
@@ -212,7 +212,7 @@ const Card = ({ data }: { data: IPokemonResult }) => {
           </h1>
           <div className="flex mx-auto justify-center">
             {types.map(({ type }, index) => {
-              const typeName: PokemonTypeColorKey = type.name;
+              const typeName = type.name as PokemonTypeColorKey;
 
               return (
                 <p
