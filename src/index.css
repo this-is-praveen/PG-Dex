@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: "Choco cooky";
+  font-style: normal;
+  font-weight: normal;
+  src: local("Chococooky"), url(./assets/fonts/Chococooky.woff) format("woff");
+}
+@font-face {
+  font-family: "Pokemon Hollow";
+  font-style: normal;
+  font-weight: normal;
+  src: local("PokemonHollow"),
+    url(./assets/fonts/PokemonHollow.ttf) format("truetype");
+}
+@font-face {
+  font-family: "Pokemon Solid";
+  font-style: normal;
+  font-weight: normal;
+  src: local("PokemonSolid"),
+    url(./assets/fonts/PokemonSolid.ttf) format("truetype");
+}
+
+#root {
+  font-family: "Choco cooky";
+  min-height: 100%;
+  background-color: #e7e5e4;
+  background-image: url("./assets/Wallpaper/bg3.jpg");
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+.u-bounce {
+  animation: bounce 1000ms infinite;
+}
