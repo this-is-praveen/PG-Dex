@@ -1,19 +1,10 @@
 import axios from "axios";
-import React, {
-  ChangeEventHandler,
-  Fragment,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
-import classes from "./home.module.css";
-import { LazyLoadImage } from "react-lazy-load-image-component";
-import "react-lazy-load-image-component/src/effects/blur.css";
-import PokeballLoader from "../../assets/pokeball.gif";
-import { PokemonData, PokemonTypeColorKey } from "../../assets/types";
-import { PokemonTypeColors } from "../../assets/globals";
 import debounce from "lodash/debounce";
+import { useEffect, useRef, useState } from "react";
+import InfiniteScroll from "react-infinite-scroll-component";
+import "react-lazy-load-image-component/src/effects/blur.css";
+import PokemonCard from "../../components/PokemonCard";
+import classes from "./style.module.css";
 
 const baseURL = "https://pokeapi.co/api/v2";
 
@@ -49,7 +40,6 @@ const App = () => {
       .get(reqUrl)
       .then((response) => {
         const currentResponse: IPokeData = response.data;
-        // const removedForms
         setPokeData(currentResponse);
         setPokemonList(currentResponse.results.slice(0, 24));
       })
@@ -87,7 +77,7 @@ const App = () => {
     >
       <div className="flex flex-wrap justify-around">
         {pokemonList.map((data) => (
-          <Card data={data} key={data.name} />
+          <PokemonCard data={data} key={data.name} />
         ))}
       </div>
     </InfiniteScroll>
@@ -133,11 +123,7 @@ const App = () => {
   return (
     <div className={"flex flex-col w-full m-auto"}>
       <div className="flex flex-col md:flex-row justify-between items-center mx-1 mb-2 md:mx-5 md:mb-8 ">
-        <div
-          className={`${classes["page_title"]} ${classes["card_name"]} mb-4 md:mb-0`}
-        >
-          PG DEX
-        </div>
+        <div className={`${classes["page_title"]} mb-4 md:mb-0`}>PG DEX</div>
         {SearchBar}
       </div>
       <div className="flex w-full">{LayoutScroller}</div>
@@ -145,98 +131,4 @@ const App = () => {
   );
 };
 
-const Loader = () => {
-  return (
-    <div className="flex text-center w-full h-full justify-center">
-      <div className={classes["pokeball"]} />
-    </div>
-  );
-};
-
-const Card = ({ data }: { data: IPokemonResult }) => {
-  if (!data.name) return <Fragment />;
-  const name = data.name;
-  const id = data.url.split("/").at(-2);
-  const paddedId = String(id).padStart(3, "0");
-  const otherImageUrls = `https://img.pokemondb.net/artwork/${name}.jpg`;
-  const imageUrl =
-    `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${id}.png` ||
-    `https://raw.githubusercontent.com/HybridShivam/Pokemon/master/assets/images/${paddedId}.png`;
-  const [imageSize, setImageSize] = useState(0);
-  const [pokemonData, setPokemonData] = useState<PokemonData>();
-
-  useEffect(() => {
-    axios
-      .get(data.url)
-      .then((response) => {
-        setPokemonData(response.data);
-      })
-      .catch((error) => {
-        console.error(`Error fetching ${name} data `, error);
-      });
-  }, []);
-
-  const types = pokemonData?.types || [];
-  const color1 =
-    PokemonTypeColors[types?.[0]?.type?.name as PokemonTypeColorKey];
-  const color2 =
-    PokemonTypeColors[types?.[1]?.type?.name as PokemonTypeColorKey] ||
-    "transparent";
-  return (
-    <div
-      className={
-        classes["card"] +
-        " flex m-2 flex-col lg:basis-3/12 md:basic-5/12 basis-11/12 transform transition duration-500 hover:scale-105"
-      }
-      style={{
-        background: `radial-gradient(circle, ${color1} 0%, ${color2} 100%)`,
-      }}
-    >
-      <div className={`${classes["ribbon"]} ${classes["ribbon-top-right"]}`}>
-        <span style={{ backgroundColor: color1 }}># {id}</span>
-      </div>
-      <div className="flex justify-center">
-        <LazyLoadImage
-          className="test"
-          src={!!id && +id > 1000 ? imageUrl : imageUrl}
-          width={200}
-          alt={name}
-          height={200}
-          effect={"blur"}
-          placeholderSrc={PokeballLoader}
-        />
-      </div>
-      <div className="flex">
-        <div className="bg-white w-full pt-5 pb-8 text-center">
-          <h1
-            className={
-              classes["card_name"] + " capitalize font-semibold text-3xl mb-2"
-            }
-          >
-            {name}
-          </h1>
-          <div className="flex mx-auto justify-center">
-            {types.map(({ type }, index) => {
-              const typeName = type.name as PokemonTypeColorKey;
-
-              return (
-                <p
-                  key={`${id}-${typeName}`}
-                  className={
-                    classes["card_type"] +
-                    " font-bold uppercase mt-2" +
-                    (index !== types.length - 1 ? " mr-6" : "")
-                  }
-                  style={{ color: PokemonTypeColors[typeName] }}
-                >
-                  {typeName}
-                </p>
-              );
-            })}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 export default App;

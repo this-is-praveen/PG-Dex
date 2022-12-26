@@ -1,0 +1,10 @@
+.app {
+}
+
+.page_title {
+  font-family: Pokemon Solid;
+  color: #0075be;
+  font-size: 4rem;
+  text-shadow: -4px 4px 0 #ffcc00, 4px 4px 0 #ffcc00, 4px -4px 0 #ffcc00,
+    -4px -4px 0 #ffcc00;
+}
