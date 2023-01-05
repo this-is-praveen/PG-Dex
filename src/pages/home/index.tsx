@@ -3,10 +3,14 @@ import debounce from "lodash/debounce";
 import { useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
+import { useNavigate } from "react-router-dom";
+import Header from "../../components/Header";
 import PokemonCard from "../../components/PokemonCard";
 import classes from "./style.module.css";
-
-const baseURL = "https://pokeapi.co/api/v2";
+import { useQuery } from "react-query";
+import { isEmpty } from "lodash";
+import Loader from "../../components/Loader";
+import { APIBasePath } from "../../utils";
 
 export interface IPokeData {
   count: number;
@@ -20,7 +24,7 @@ export interface IPokemonResult {
   url: string;
 }
 
-const App = () => {
+const HomePage = () => {
   const initialData: IPokeData = {
     count: 0,
     next: null,
@@ -32,30 +36,38 @@ const App = () => {
   const [pokemonList, setPokemonList] = useState<IPokemonResult[]>(
     initialData.results
   );
+  const navigate = useNavigate();
 
-  const apiCall = async () => {
-    const initialAPIRequest = `${baseURL}/pokemon?offset=0&limit=1500`;
-    const reqUrl = pokeData.next || initialAPIRequest;
-    const response = await axios
-      .get(reqUrl)
+  const requestURL = `${APIBasePath}/pokemon?limit=-1`;
+  const { isLoading, error, data } = useQuery("allPokemonData", () =>
+    axios
+      .get(requestURL)
       .then((response) => {
         const currentResponse: IPokeData = response.data;
-        setPokeData(currentResponse);
-        setPokemonList(currentResponse.results.slice(0, 24));
+
+        return currentResponse;
       })
       .catch((error) => {
         console.error(error);
-      });
+      })
+  );
 
-    return response;
-  };
   useEffect(() => {
-    apiCall();
-  }, []);
+    if (!isEmpty(data)) {
+      const res = data as IPokeData;
+      setPokeData(res);
+      setPokemonList(res.results.slice(0, 24));
+    }
+  }, [data]);
 
   const Next = () => {
-    setPokemonList((prevData) => {
-      return pokeData.results.slice(0, prevData.length + 24);
+    new Promise((resolve) => {
+      setTimeout(() => {
+        resolve({});
+        setPokemonList((prevData) =>
+          pokeData.results.slice(0, prevData.length + 24)
+        );
+      }, 1000);
     });
   };
 
@@ -68,11 +80,19 @@ const App = () => {
         !!!searchBarRef?.current?.value &&
         pokemonList.length + 1 < pokeData.count
       }
-      loader={<h4>Loading...</h4>}
+      loader={null}
       endMessage={
-        <p style={{ textAlign: "center" }}>
-          <b>Yay! You have seen it all</b>
-        </p>
+        isLoading || true ? (
+          <Loader />
+        ) : !pokemonList.length ? (
+          <p style={{ textAlign: "center" }}>
+            <b>No Results : (</b>
+          </p>
+        ) : (
+          <p style={{ textAlign: "center" }}>
+            <b>Yay! You have seen it all</b>
+          </p>
+        )
       }
     >
       <div className="flex flex-wrap justify-around">
@@ -90,7 +110,7 @@ const App = () => {
         ? pokeData.results.filter((value) => {
             if (!!+searchBy) {
               const id = value.url.split("/").at(-2);
-              const byNumber = id === searchBy;
+              const byNumber = id?.includes(searchBy);
 
               return byNumber;
             } else {
@@ -105,30 +125,37 @@ const App = () => {
     });
   }, 1000);
 
-  const SearchBar = (
-    <div className="flex justify-center">
-      <div className="mb-3 xl:w-96">
-        <input
-          ref={searchBarRef}
-          type="search"
-          className="form-control block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-blue-600 focus:outline-none"
-          id="search-pokemon"
-          placeholder="Arceus"
-          onChange={onSearchChange}
-        />
-      </div>
-    </div>
-  );
+  if (error) {
+    const { message: errorMessage } = error as any;
+    return <h1>Oops unable to connect to PokeAPI V2 {errorMessage}</h1>;
+  }
+
+  const headerSearchActionProps = {
+    text: "Go Random",
+    onClick: () => {
+      const results = pokeData.results;
+      const randomIndex = Math.floor(Math.random() * results.length);
+      const randomPkmn = results[randomIndex];
+      const randomPkmnId = randomPkmn.url.split("/").at(-2);
+      navigate(`/pokemon/${randomPkmnId}`);
+    },
+  };
 
   return (
-    <div className={"flex flex-col w-full m-auto"}>
+    <div
+      className={`${classes["pokemons_list"]} mh-screen flex flex-col w-full m-auto`}
+    >
       <div className="flex flex-col md:flex-row justify-between items-center mx-1 mb-2 md:mx-5 md:mb-8 ">
-        <div className={`${classes["page_title"]} mb-4 md:mb-0`}>PG DEX</div>
-        {SearchBar}
+        <Header
+          isSearchBarNeeded={true}
+          onSearchChange={onSearchChange}
+          inputRef={searchBarRef}
+          headerSearchActionProps={headerSearchActionProps}
+        />
       </div>
       <div className="flex w-full">{LayoutScroller}</div>
     </div>
   );
 };
 
-export default App;
+export default HomePage;

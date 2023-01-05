@@ -2,8 +2,9 @@ import axios from "axios";
 import { Fragment, useEffect, useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
-import PokeballLoader from "../../assets/pokeball.gif";
+import { useNavigate } from "react-router-dom";
 import { PokemonTypeColors } from "../../assets/globals";
+import PokeballLoader from "../../assets/pokeball.gif";
 import { PokemonData, PokemonTypeColorKey } from "../../assets/types";
 import { IPokemonResult } from "../../pages/home";
 import classes from "./style.module.css";
@@ -12,13 +13,10 @@ const PokemonCard = ({ data }: { data: IPokemonResult }) => {
   if (!data.name) return <Fragment />;
   const name = data.name;
   const id = data.url.split("/").at(-2);
-  const paddedId = String(id).padStart(3, "0");
-  const otherImageUrls = `https://img.pokemondb.net/artwork/${name}.jpg`;
-  const imageUrl =
-    `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${id}.png` ||
-    `https://raw.githubusercontent.com/HybridShivam/Pokemon/master/assets/images/${paddedId}.png`;
-  const [imageSize, setImageSize] = useState(0);
   const [pokemonData, setPokemonData] = useState<PokemonData>();
+  const imageUrl =
+    pokemonData?.sprites.other.home.front_default ||
+    `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${id}.png`;
 
   useEffect(() => {
     axios
@@ -37,19 +35,28 @@ const PokemonCard = ({ data }: { data: IPokemonResult }) => {
   const color2 =
     PokemonTypeColors[types?.[1]?.type?.name as PokemonTypeColorKey] ||
     "transparent";
+
+  const navigate = useNavigate();
+
+  const cardOnClick = () => {
+    navigate(`/pokemon/${id}`, { state: { data: pokemonData } });
+  };
+
   return (
     <div
       className={
         classes["card"] +
-        " group flex m-2 flex-col lg:basis-3/12 md:basic-5/12 basis-11/12"
+        " group flex m-2 flex-col lg:basis-3/12 md:basic-5/12 basis-11/12 "
       }
       style={{
         background: `radial-gradient(circle, ${color1} 0%, ${color2} 100%)`,
       }}
+      onClick={cardOnClick}
     >
       <div className={`${classes["ribbon"]} ${classes["ribbon-top-right"]}`}>
         <span style={{ backgroundColor: color1 }}># {id}</span>
       </div>
+
       <div className="flex justify-center group-hover:scale-110 transform transition duration-500 ease-out">
         <LazyLoadImage
           className={``}

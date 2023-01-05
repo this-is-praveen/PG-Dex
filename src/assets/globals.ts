@@ -19,4 +19,22 @@ const PokemonTypeColors = {
   fairy: "#D685AD",
 };
 
-export { PokemonTypeColors };
+const PokemonStatColors = {
+  hp: "#FF0000",
+  attack: "#F08030",
+  defense: "#F8D030",
+  "special-attack": "#6890F0",
+  "special-defense": "#78C850",
+  speed: "#F85888",
+};
+
+const PokemonStatLabels = {
+  hp: "HP",
+  attack: "Attack",
+  defense: "Defense",
+  "special-attack": "Special Attack",
+  "special-defense": "Special Defense",
+  speed: "Speed",
+};
+
+export { PokemonTypeColors, PokemonStatColors, PokemonStatLabels };
