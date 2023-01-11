@@ -1,11 +1,14 @@
 import axios from "axios";
-import { Fragment, useEffect, useState } from "react";
+import { isEmpty } from "lodash";
+import { Fragment, useContext, useEffect, useState } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
+import { useQuery } from "react-query";
 import { useNavigate } from "react-router-dom";
 import { PokemonTypeColors } from "../../assets/globals";
 import PokeballLoader from "../../assets/pokeball.gif";
 import { PokemonData, PokemonTypeColorKey } from "../../assets/types";
+import PG_Context from "../../context";
 import { IPokemonResult } from "../../pages/home";
 import classes from "./style.module.css";
 
@@ -18,16 +21,24 @@ const PokemonCard = ({ data }: { data: IPokemonResult }) => {
     pokemonData?.sprites.other.home.front_default ||
     `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/${id}.png`;
 
+  const { data: { data: cardData } = {} } = useQuery(`pokemon_card_${id}`, () =>
+    axios.get(data.url)
+  );
+
   useEffect(() => {
-    axios
-      .get(data.url)
-      .then((response) => {
-        setPokemonData(response.data);
-      })
-      .catch((error) => {
-        console.error(`Error fetching ${name} data `, error);
-      });
-  }, []);
+    // axios
+    //   .get(data.url)
+    //   .then((response) => {
+    //     setPokemonData(response.data);
+    //   })
+    //   .catch((error) => {
+    //     console.error(`Error fetching ${name} data `, error);
+    //   });
+
+    if (!isEmpty(cardData)) {
+      setPokemonData(cardData);
+    }
+  }, [cardData]);
 
   const types = pokemonData?.types || [];
   const color1 =

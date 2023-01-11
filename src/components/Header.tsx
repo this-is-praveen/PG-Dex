@@ -1,9 +1,12 @@
-import { Fragment } from "react";
-import { useNavigate } from "react-router-dom";
+import { isEmpty } from "lodash";
+import { Fragment, MouseEventHandler, useContext } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import PG_Context from "../context";
 import classes from "./styles.module.css";
 
 type withSearchBar = {
   isSearchBarNeeded: true;
+  isNextPrevPokemonButtonAvailable: false;
   onSearchChange: React.ChangeEventHandler<HTMLInputElement> | undefined;
   inputRef: React.LegacyRef<HTMLInputElement> | undefined;
   headerSearchActionProps?: {
@@ -12,15 +15,28 @@ type withSearchBar = {
   };
 };
 
-type withoutSearchBar = {
+type withoutSearchBarWithNextAndPrevious = {
   isSearchBarNeeded?: false;
+  isNextPrevPokemonButtonAvailable?: true;
+};
+type withoutSearchBarWithOutNextAndPrevious = {
+  isSearchBarNeeded?: false;
+  isNextPrevPokemonButtonAvailable?: false;
 };
 
-type IHeader = withSearchBar | withoutSearchBar;
+type IHeader =
+  | withSearchBar
+  | (
+      | withoutSearchBarWithNextAndPrevious
+      | withoutSearchBarWithOutNextAndPrevious
+    );
 
 const Header = (props: IHeader) => {
-  const { isSearchBarNeeded } = props;
+  const { isSearchBarNeeded, isNextPrevPokemonButtonAvailable } = props;
+
   const navigate = useNavigate();
+  const { contextData } = useContext(PG_Context);
+  const { pokemonId: pokemonIdFromLocation = 0 } = useParams();
 
   const Logo = (
     <div
@@ -61,6 +77,50 @@ const Header = (props: IHeader) => {
       <Fragment>
         {Logo}
         {SearchBar}
+      </Fragment>
+    );
+  } else if (isNextPrevPokemonButtonAvailable) {
+    const Button = ({ type }: { type: "next" | "prev" }) => {
+      const isNext = type === "next";
+      const pokemonIdsInContext: string[] = contextData.pokemonIds || [];
+
+      if (isEmpty(pokemonIdsInContext)) return <Fragment />;
+
+      const indexInpokemonIdsInContext = pokemonIdsInContext.findIndex(
+        (index) => index === pokemonIdFromLocation
+      );
+
+
+      const hidden = isNext
+        ? indexInpokemonIdsInContext > pokemonIdsInContext.length + 1
+        : pokemonIdFromLocation < 2;
+
+      if (hidden || indexInpokemonIdsInContext === -1) return <Fragment />;
+      const nextOrPrevIndex = isNext
+        ? indexInpokemonIdsInContext + 1
+        : indexInpokemonIdsInContext - 1;
+
+      return (
+        <div
+          className={`text-[6rem] ${classes["page_title"]} select-none hover:animate-pulse`}
+          onClick={() =>
+            navigate(`/pokemon/${pokemonIdsInContext[nextOrPrevIndex]}`, {
+              state: { data: {} },
+            })
+          }
+        >
+          {isNext ? <>&raquo;</> : <>&laquo;</>}
+        </div>
+      );
+    };
+
+    return (
+      <Fragment>
+        {Logo}
+        <div className="inline-flex absolute right-6 gap-6">
+          <Button type="prev" />
+          <Button type="next" />
+        </div>
       </Fragment>
     );
   }

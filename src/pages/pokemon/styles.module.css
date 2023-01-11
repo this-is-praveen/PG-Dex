@@ -15,7 +15,7 @@
   user-select: none;
 }
 
-.pokemon_detail_section .detail_card {
+.detail_card {
   /* From https://css.glass */
   background: rgba(255, 255, 255, 0.2);
   border-radius: 16px;

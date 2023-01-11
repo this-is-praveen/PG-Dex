@@ -34,7 +34,7 @@ const RenderAbility = ({ ability }: { ability: Ability }) => {
       <Tooltip
         anchorId={id}
         content={abilityContent?.effect}
-        className="max-w-[90%]"
+        className="max-w-[90%] !text-[10px] font-['GB'] leading-5"
       />
     </Fragment>
   );
@@ -48,7 +48,7 @@ const Abilities = ({ abilities }: { abilities: Ability[] }) => {
       </div>
       <ul className="flex flex-col justify-center">
         {abilities.map((ability) => (
-          <RenderAbility ability={ability} />
+          <RenderAbility key={ability.ability.name} ability={ability} />
         ))}
       </ul>
     </div>

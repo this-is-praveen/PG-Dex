@@ -1,9 +1,49 @@
 .page_title {
-  font-family: Pokemon Solid;
+  font-family: PokemonSolid;
   color: #0075be;
   font-size: 4rem;
   text-shadow: -4px 4px 0 #ffcc00, 4px 4px 0 #ffcc00, 4px -4px 0 #ffcc00,
     -4px -4px 0 #ffcc00;
   z-index: 99;
   cursor: pointer;
+}
+
+.arrow_content {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  .arrow {
+    width: 75px;
+    height: 65px;
+
+    &:hover {
+      polygon {
+        fill: #fff;
+        transition: all 0.2s ease-out;
+
+        &.arrow-bottom {
+          transform: translateY(-18px);
+        }
+
+        &.arrow-top {
+          transform: translateY(18px);
+        }
+      }
+    }
+
+    polygon {
+      fill: #fff;
+      transition: all 0.2s ease-out;
+
+      &.arrow-middle {
+        opacity: 0.75;
+      }
+
+      &.arrow-top {
+        opacity: 0.5;
+      }
+    }
+  }
 }

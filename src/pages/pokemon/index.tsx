@@ -19,12 +19,18 @@ import PhysicalAndAbilities from "./physicalAndAbilities";
 import PokemonDescription from "./description";
 import StatChart from "./statChart";
 import classes from "./styles.module.css";
+import EvolutionChart from "./evolutionChart";
+import { Helmet } from "react-helmet";
 
 const ImageComponent = ({ pokeData }: { pokeData: PokemonData }) => {
   const [isShiny, setIsShiny] = useState(false);
   console.log("pokeData", pokeData);
   return (
     <Fragment>
+      <div className="absolute text-2xl top-16 left-16">
+        <span className="pr-3	font-['PokemonOR']">National #</span>
+        <span>{pokeData.id}</span>
+      </div>
       <div
         className={`flex justify-end ${
           classes[isShiny ? "starOn" : "starOff"]
@@ -87,7 +93,12 @@ const PokemonTitle = ({
         <div className={`text-center`}>{genera}</div>
       </div>
       <div className="ml-auto w-24">
-        <LazyLoadImage src={pokemonData.sprites.front_default} />
+        <LazyLoadImage
+          src={
+            pokemonData.sprites.versions["generation-v"]["black-white"].animated
+              .front_default || pokemonData.sprites.front_default
+          }
+        />
       </div>
     </div>
   );
@@ -117,28 +128,32 @@ const Pokemon = (props: any) => {
     return axios.get(requestURL);
   };
 
-  const { data: spData, refetch: refetchSpeciesData } = useQuery(
-    `species_${pokemonId}`,
-    fetchSpeciesData,
-    { refetchOnWindowFocus: false, enabled: +pokemonId < 10000 }
-  );
+  const {
+    data: spData,
+    refetch: refetchSpeciesData,
+    error: speciesError,
+  } = useQuery(`species_${pokemonId}`, fetchSpeciesData, {
+    refetchOnWindowFocus: false,
+    enabled: +pokemonId < 10000,
+  });
   const { data, isLoading, error, refetch } = useQuery(
     `pokemon_${pokemonId}`,
     fetchData,
-    { refetchOnWindowFocus: false, enabled: false }
+    {
+      refetchOnWindowFocus: false,
+      enabled: isEmpty(pokemonDataFromLocation),
+    }
   );
+
   useEffect(() => {
-    if (isEmpty(spData) && !isEmpty(pokemonData) && +pokemonId > 10000) {
+    if (isEmpty(spData) && !isEmpty(pokemonData) && +pokemonId >= 10000) {
       refetchSpeciesData();
     }
   }, [spData, pokemonData]);
 
   useEffect(() => {
-    if (isEmpty(pokemonDataFromLocation) && refetch) {
-      refetch();
-    } else {
-      setPokemonData(pokemonDataFromLocation);
-    }
+    if (isEmpty(pokemonDataFromLocation)) return;
+    setPokemonData(pokemonDataFromLocation);
   }, [pokemonDataFromLocation]);
 
   useEffect(() => {
@@ -169,31 +184,31 @@ const Pokemon = (props: any) => {
   }, [pokemonData]);
   const speciesData = spData?.data as PokemonSpeciesData;
 
+  if (error || speciesError) {
+    console.error({ error, speciesError });
+    return <>404</>;
+  }
   if (isLoading || isEmpty(pokemonData) || isEmpty(speciesData)) {
-    console.log(
-      "isLoading ",
-      isLoading,
-      isEmpty(pokemonData),
-      isEmpty(speciesData)
-    );
     return <Loader />;
   }
-  console.log("speciesData", speciesData);
   const pokemonGenera =
     speciesData.genera.find((genusItem) => genusItem.language.name === "en")
       ?.genus || "";
 
   return (
     <div className={classes["pokemon_detail"]}>
+      <Helmet>
+        <title>{`PG-Dex ${pokemonData.id}.${pokemonData.name}`}</title>
+      </Helmet>
       <BackgroundImage
         imageUrl={pokemonData.sprites.other["official-artwork"].front_default}
       />
       <div className="flex justify-center items-center mb-2 md:mb-8 ">
-        <Header />
+        <Header isNextPrevPokemonButtonAvailable={true} />
       </div>
       <div className="flex justify-evenly">
         <div
-          className={`${classes["pokemon_image_section"]} flex flex-col w-3/6`}
+          className={`${classes["pokemon_image_section"]} flex relative flex-col w-3/6`}
         >
           <ImageComponent pokeData={pokemonData} />
         </div>
@@ -220,6 +235,7 @@ const Pokemon = (props: any) => {
           </div>
         </div>
       </div>
+      <EvolutionChart speciesData={speciesData} />
     </div>
   );
 };

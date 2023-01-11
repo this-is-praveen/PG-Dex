@@ -34,6 +34,7 @@ const PokemonDescription = ({
 
           return (
             <div
+              key={type}
               className={`flex ${
                 !index ? "flex-row-reverse" : ""
               } w-32 min-w-max px-3 justify-center items-center text-md align-center uppercase tracking-[.5rem]`}

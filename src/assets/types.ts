@@ -436,66 +436,141 @@ export interface Pokemon {
 }
 
 export interface PokemonAbilityData {
-  effect_changes: any[]
-  effect_entries: EffectEntry[]
-  flavor_text_entries: FlavorTextEntry[]
-  generation: Generation
-  id: number
-  is_main_series: boolean
-  name: string
-  names: Name[]
-  pokemon: Pokemon[]
+  effect_changes: any[];
+  effect_entries: EffectEntry[];
+  flavor_text_entries: FlavorTextEntry[];
+  generation: Generation;
+  id: number;
+  is_main_series: boolean;
+  name: string;
+  names: Name[];
+  pokemon: Pokemon[];
 }
 
 export interface EffectEntry {
-  effect: string
-  language: Language
-  short_effect: string
+  effect: string;
+  language: Language;
+  short_effect: string;
 }
 
 export interface Language {
-  name: string
-  url: string
+  name: string;
+  url: string;
 }
 
 export interface FlavorTextEntry {
-  flavor_text: string
-  language: Language2
-  version_group: VersionGroup
+  flavor_text: string;
+  language: Language2;
+  version_group: VersionGroup;
 }
 
 export interface Language2 {
-  name: string
-  url: string
+  name: string;
+  url: string;
 }
 
 export interface VersionGroup {
-  name: string
-  url: string
+  name: string;
+  url: string;
 }
 
 export interface Generation {
-  name: string
-  url: string
+  name: string;
+  url: string;
 }
 
 export interface Name {
-  language: Language3
-  name: string
+  language: Language3;
+  name: string;
 }
 
 export interface Language3 {
-  name: string
-  url: string
+  name: string;
+  url: string;
 }
 
 export interface Pokemon {
-  is_hidden: boolean
-  pokemon: Pokemon2
-  slot: number
+  is_hidden: boolean;
+  pokemon: Pokemon2;
+  slot: number;
 }
 
 export interface Pokemon2 {
-  name: string
-  url: string
+  name: string;
+  url: string;
+}
+
+export interface PokemonEvolution {
+  baby_trigger_item: any;
+  chain: Chain;
+  id: number;
+}
+
+export interface Chain {
+  evolution_details: EvolutionDetail[];
+  evolves_to: EvolvesTo[];
+  is_baby: boolean;
+  species: Species3;
+}
+
+export interface EvolvesTo {
+  evolution_details: EvolutionDetail[];
+  evolves_to: EvolvesTo2[];
+  is_baby: boolean;
+  species: Species2;
+}
+
+export interface EvolutionDetail {
+  gender: any;
+  held_item: any;
+  item: any;
+  known_move: any;
+  known_move_type: any;
+  location: any;
+  min_affection: any;
+  min_beauty: any;
+  min_happiness: any;
+  min_level: number;
+  needs_overworld_rain: boolean;
+  party_species: any;
+  party_type: any;
+  relative_physical_stats: any;
+  time_of_day: string;
+  trade_species: any;
+  trigger: Trigger;
+  turn_upside_down: boolean;
+}
+
+export interface Trigger {
+  name: string;
+  url: string;
+}
+
+export interface EvolvesTo2 {
+  evolution_details: EvolutionDetail[];
+  evolves_to: any[];
+  is_baby: boolean;
+  species: Species;
+}
+
+
+
+export interface Trigger2 {
+  name: string;
+  url: string;
+}
+
+export interface Species {
+  name: string;
+  url: string;
+}
+
+export interface Species2 {
+  name: string;
+  url: string;
+}
+
+export interface Species3 {
+  name: string;
+  url: string;
 }

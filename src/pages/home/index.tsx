@@ -1,6 +1,6 @@
 import axios from "axios";
 import debounce from "lodash/debounce";
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import "react-lazy-load-image-component/src/effects/blur.css";
 import { useNavigate } from "react-router-dom";
@@ -11,6 +11,8 @@ import { useQuery } from "react-query";
 import { isEmpty } from "lodash";
 import Loader from "../../components/Loader";
 import { APIBasePath } from "../../utils";
+import PG_Context from "../../context";
+import React from "react";
 
 export interface IPokeData {
   count: number;
@@ -25,31 +27,50 @@ export interface IPokemonResult {
 }
 
 const HomePage = () => {
-  const initialData: IPokeData = {
-    count: 0,
-    next: null,
-    previous: null,
-    results: [{ name: "", url: "" }],
-  };
-  const [pokeData, setPokeData] = useState<IPokeData>(initialData);
   const searchBarRef = useRef<HTMLInputElement>(null);
-  const [pokemonList, setPokemonList] = useState<IPokemonResult[]>(
-    initialData.results
-  );
   const navigate = useNavigate();
 
   const requestURL = `${APIBasePath}/pokemon?limit=-1`;
-  const { isLoading, error, data } = useQuery("allPokemonData", () =>
+
+  const { contextData, setContextData } = useContext(PG_Context);
+  const initialData: IPokeData = !isEmpty(contextData.pokemonsData)
+    ? contextData.pokemonsData
+    : {
+        count: 0,
+        next: null,
+        previous: null,
+        results: [{ name: "", url: "" }],
+      };
+  const [pokemonList, setPokemonList] = useState<IPokemonResult[]>(
+    initialData.results.length > 1 && !isEmpty(contextData.pokemonList)
+      ? contextData.pokemonList
+      : initialData.results
+  );
+  const [pokeData, setPokeData] = useState<IPokeData>(initialData);
+
+  const fetchAllPokemons = () =>
     axios
       .get(requestURL)
       .then((response) => {
         const currentResponse: IPokeData = response.data;
+        setContextData((prevState: any) => ({
+          ...prevState,
+          pokemonsData: currentResponse,
+          pokemonIds: currentResponse.results.map((data) =>
+            data.url.split("/").at(-2)
+          ),
+        }));
 
         return currentResponse;
       })
       .catch((error) => {
         console.error(error);
-      })
+      });
+  console.log("pokeData :>> ", pokeData);
+  const { isLoading, error, data } = useQuery(
+    "allPokemonData",
+    fetchAllPokemons,
+    { enabled: !pokeData.count }
   );
 
   useEffect(() => {
@@ -57,18 +78,21 @@ const HomePage = () => {
       const res = data as IPokeData;
       setPokeData(res);
       setPokemonList(res.results.slice(0, 24));
+      setContextData((prevState: any) => ({
+        ...prevState,
+        pokemonList: res.results.slice(0, 24),
+      }));
     }
   }, [data]);
 
   const Next = () => {
-    new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({});
-        setPokemonList((prevData) =>
-          pokeData.results.slice(0, prevData.length + 24)
-        );
-      }, 1000);
-    });
+    setPokemonList((prevData) =>
+      pokeData.results.slice(0, prevData.length + 24)
+    );
+    setContextData((prevState: any) => ({
+      ...prevState,
+      pokemonList: pokeData.results.slice(0, pokemonList.length + 24),
+    }));
   };
 
   const LayoutScroller = (
