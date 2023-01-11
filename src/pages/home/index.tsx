@@ -175,6 +175,7 @@ const HomePage = () => {
           onSearchChange={onSearchChange}
           inputRef={searchBarRef}
           headerSearchActionProps={headerSearchActionProps}
+          isNextPrevPokemonButtonAvailable={false}
         />
       </div>
       <div className="flex w-full">{LayoutScroller}</div>
