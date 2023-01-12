@@ -6,6 +6,9 @@
   justify-content: center;
   padding: 15vh 0;
   flex-direction: column;
+  min-height: 100vh;
+  text-align: center;
+  width: inherit;
 }
 
 .loader::before {

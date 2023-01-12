@@ -139,7 +139,7 @@ const CurrentEvolution = ({ chain }: { chain: Chain }) => {
           {nextEvolutionChain.length &&
             nextEvolutionChain.map((nextChain, index) => {
               return (
-                <div className="flex w-full">
+                <div className={"flex w-full flex-col md:flex-row"} key={index}>
                   <NextOrParallelPokemon
                     text={
                       evolutionDetail && !!evolutionDetail[index] ? (

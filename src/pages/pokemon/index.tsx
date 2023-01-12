@@ -21,6 +21,7 @@ import StatChart from "./statChart";
 import classes from "./styles.module.css";
 import EvolutionChart from "./evolutionChart";
 import { Helmet } from "react-helmet";
+import { isMobile } from "react-device-detect";
 
 const ImageComponent = ({ pokeData }: { pokeData: PokemonData }) => {
   const [isShiny, setIsShiny] = useState(false);
@@ -45,7 +46,7 @@ const ImageComponent = ({ pokeData }: { pokeData: PokemonData }) => {
         src={
           pokeData.sprites.other.home[isShiny ? "front_shiny" : "front_default"]
         }
-        width={"90%"}
+        width={isMobile ? "100%" : "90%"}
         alt={pokeData.name}
         effect={"blur"}
         placeholderSrc={PokeballLoader}
@@ -161,7 +162,11 @@ const Pokemon = (props: any) => {
     if (!isEmpty(pokemonData)) {
       const rootElement = document.getElementById("root");
       if (rootElement) {
-        rootElement.style.background = `linear-gradient(90deg, ${color2} 0%, ${color1} 50%)`;
+        rootElement.style.background = `linear-gradient(${
+          isMobile ? 360 : 90
+        }deg, ${isMobile ? color1 : color2} 0%, ${
+          isMobile ? color2 : color1
+        } 50%)`;
       }
     }
   }, [pokemonData]);
@@ -192,7 +197,11 @@ const Pokemon = (props: any) => {
         <div
           className={`${classes["pokemon_image_section"]} flex relative flex-col w-full md:w-3/6`}
         >
-          <div className={`${classes["ribbon"]} ${classes["ribbon-top-left"]}`}>
+          <div
+            className={`${classes["ribbon"]} ${classes["ribbon-top-left"]} ${
+              isMobile ? "left-5" : "left-24"
+            }`}
+          >
             <span style={{ backgroundColor: color1 }}># {pokemonId}</span>
           </div>
           <ImageComponent pokeData={pokemonData} />

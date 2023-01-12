@@ -18,7 +18,7 @@ const Arrow = ({
   position: PositionType;
 }) => {
   return (
-    <div className="relative h-40 md:h-full">
+    <div className="relative h-40  md:h-full w-auto">
       <div className={classes["arrow_content"]}>
         <div className="text-center my-3">{text}</div>
         <svg className={`${classes["arrow"]} ${positionClass[position]}`}>
