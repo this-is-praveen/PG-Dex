@@ -44,7 +44,10 @@ const StatChart = (props: { stats: any[] }) => {
         <div
           className={`${classes["fontOr"]} flex uppercase text-2xl justify-center`}
         >
-          Base stats - {baseState}
+          Base stats -{" "}
+          <span className="font-['PokemonSolid'] items-baseline	 tracking-widest">
+            {baseState}
+          </span>
         </div>
         <Radar
           data={{
@@ -70,10 +73,9 @@ const StatChart = (props: { stats: any[] }) => {
               r: {
                 min: 0,
                 suggestedMax: maximumLimit,
-
                 pointLabels: {
                   color: "#000",
-                  font: { size: 14, weight: "semi-bold" },
+                  font: { family: "PokemonSolid", size: 14, weight: "400" },
                 },
                 grid: { color: "rgba(0, 0, 0, 0.1)" },
                 animate: true,

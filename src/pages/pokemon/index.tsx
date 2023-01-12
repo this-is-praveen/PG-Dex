@@ -24,13 +24,8 @@ import { Helmet } from "react-helmet";
 
 const ImageComponent = ({ pokeData }: { pokeData: PokemonData }) => {
   const [isShiny, setIsShiny] = useState(false);
-  console.log("pokeData", pokeData);
   return (
     <Fragment>
-      <div className="absolute text-2xl top-16 left-16">
-        <span className="pr-3	font-['PokemonOR']">National #</span>
-        <span>{pokeData.id}</span>
-      </div>
       <div
         className={`flex justify-end ${
           classes[isShiny ? "starOn" : "starOff"]
@@ -109,19 +104,13 @@ const Pokemon = (props: any) => {
   const { pokemonId = 0 } = useParams();
   const pokemonDataFromLocation = location.state?.data as PokemonData;
   const [pokemonData, setPokemonData] = useState<PokemonData>();
-  const [pokemonColor, setPokemonColor] = useState<FastAverageColorResult>();
 
-  const callRequest = {
-    method: `pokemon/${pokemonId}/`,
-    url: "/posts",
-  };
   const fetchData = () => {
     const requestURL = `${APIBasePath}/pokemon/${pokemonId}`;
 
     return axios.get(requestURL);
   };
   const fetchSpeciesData = () => {
-    console.log("pokemonData :>> ", pokemonData);
     const requestURL =
       pokemonData?.species.url || `${APIBasePath}/pokemon-species/${pokemonId}`;
 
@@ -162,30 +151,23 @@ const Pokemon = (props: any) => {
       setPokemonData(pokemonDataFromResponse);
     }
   }, [data]);
-
+  const types = pokemonData?.types || [];
+  const color1 =
+    PokemonTypeColors[types?.[0]?.type?.name as PokemonTypeColorKey];
+  const color2 =
+    PokemonTypeColors[types?.[1]?.type?.name as PokemonTypeColorKey] ||
+    "transparent";
   useEffect(() => {
     if (!isEmpty(pokemonData)) {
-      const imageUrl = pokemonData.sprites.other.home.front_default;
-      const fac = new FastAverageColor();
-      fac.getColorAsync(imageUrl).then((color) => {
-        setPokemonColor(color);
-        const rootElement = document.getElementById("root");
-        if (rootElement) {
-          const types = pokemonData?.types || [];
-          const color1 =
-            PokemonTypeColors[types?.[0]?.type?.name as PokemonTypeColorKey];
-          const color2 =
-            PokemonTypeColors[types?.[1]?.type?.name as PokemonTypeColorKey] ||
-            "transparent";
-          rootElement.style.background = `linear-gradient(90deg, ${color2} 0%, ${color1} 50%)`;
-        }
-      });
+      const rootElement = document.getElementById("root");
+      if (rootElement) {
+        rootElement.style.background = `linear-gradient(90deg, ${color2} 0%, ${color1} 50%)`;
+      }
     }
   }, [pokemonData]);
   const speciesData = spData?.data as PokemonSpeciesData;
 
   if (error || speciesError) {
-    console.error({ error, speciesError });
     return <>404</>;
   }
   if (isLoading || isEmpty(pokemonData) || isEmpty(speciesData)) {
@@ -206,13 +188,18 @@ const Pokemon = (props: any) => {
       <div className="flex justify-center items-center mb-2 md:mb-8 ">
         <Header isNextPrevPokemonButtonAvailable={true} />
       </div>
-      <div className="flex justify-evenly">
+      <div className="flex justify- flex-col md:flex-row">
         <div
-          className={`${classes["pokemon_image_section"]} flex relative flex-col w-3/6`}
+          className={`${classes["pokemon_image_section"]} flex relative flex-col w-full md:w-3/6`}
         >
+          <div className={`${classes["ribbon"]} ${classes["ribbon-top-left"]}`}>
+            <span style={{ backgroundColor: color1 }}># {pokemonId}</span>
+          </div>
           <ImageComponent pokeData={pokemonData} />
         </div>
-        <div className={`${classes["pokemon_detail_section"]} flex w-3/6`}>
+        <div
+          className={`${classes["pokemon_detail_section"]} flex w-full md:w-3/6 justify-center`}
+        >
           <div className={`${classes["detail_card"]} w-11/12`}>
             <PokemonTitle pokemonData={pokemonData} genera={pokemonGenera} />
             <div>
@@ -221,14 +208,14 @@ const Pokemon = (props: any) => {
                 pokemonData={pokemonData}
               />
             </div>
-            <div className="flex gap-3">
-              <div className="flex w-6/12">
+            <div className="flex flex-col md:flex-row gap-3">
+              <div className="flex w-full md:w-6/12">
                 <PhysicalAndAbilities
                   pokemonData={pokemonData}
                   speciesData={speciesData}
                 />
               </div>
-              <div className={`flex w-6/12`}>
+              <div className={`flex w-full md:w-6/12`}>
                 <StatChart stats={pokemonData.stats} />
               </div>
             </div>

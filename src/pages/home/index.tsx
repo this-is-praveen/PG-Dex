@@ -66,7 +66,6 @@ const HomePage = () => {
       .catch((error) => {
         console.error(error);
       });
-  console.log("pokeData :>> ", pokeData);
   const { isLoading, error, data } = useQuery(
     "allPokemonData",
     fetchAllPokemons,

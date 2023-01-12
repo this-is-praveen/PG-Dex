@@ -26,15 +26,6 @@ const PokemonCard = ({ data }: { data: IPokemonResult }) => {
   );
 
   useEffect(() => {
-    // axios
-    //   .get(data.url)
-    //   .then((response) => {
-    //     setPokemonData(response.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error(`Error fetching ${name} data `, error);
-    //   });
-
     if (!isEmpty(cardData)) {
       setPokemonData(cardData);
     }
@@ -57,7 +48,7 @@ const PokemonCard = ({ data }: { data: IPokemonResult }) => {
     <div
       className={
         classes["card"] +
-        " group flex m-2 flex-col lg:basis-3/12 md:basic-5/12 basis-11/12 "
+        " group flex m-2 flex-col lg:basis-3/12 md:basic-5/12 sm:basis-4/12 basis-11/12 "
       }
       style={{
         background: `radial-gradient(circle, ${color1} 0%, ${color2} 100%)`,
@@ -67,7 +58,6 @@ const PokemonCard = ({ data }: { data: IPokemonResult }) => {
       <div className={`${classes["ribbon"]} ${classes["ribbon-top-right"]}`}>
         <span style={{ backgroundColor: color1 }}># {id}</span>
       </div>
-
       <div className="flex justify-center group-hover:scale-110 transform transition duration-500 ease-out">
         <LazyLoadImage
           className={``}

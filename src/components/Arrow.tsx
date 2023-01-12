@@ -1,23 +1,24 @@
 import classes from "./styles.module.css";
 
 const positionClass = {
-  top: "rotate-45",
   right: "-rotate-90",
+  topRight: "-rotate-[135deg]",
   bottom: "rotate-0",
+  bottomRight: "-rotate-45",
   left: "rotate-90",
 };
 
-type positionType = keyof typeof positionClass;
+export type PositionType = keyof typeof positionClass;
 
 const Arrow = ({
   text,
   position,
 }: {
   text: JSX.Element | string;
-  position: positionType;
+  position: PositionType;
 }) => {
   return (
-    <div className="relative">
+    <div className="relative h-40 md:h-full">
       <div className={classes["arrow_content"]}>
         <div className="text-center my-3">{text}</div>
         <svg className={`${classes["arrow"]} ${positionClass[position]}`}>
