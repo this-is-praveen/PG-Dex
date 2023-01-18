@@ -1,7 +1,8 @@
 import axios from "axios";
-import { FastAverageColor, FastAverageColorResult } from "fast-average-color";
-import { isEmpty } from "lodash";
+import { isEmpty, startCase } from "lodash";
 import { Fragment, useEffect, useState } from "react";
+import { isMobile } from "react-device-detect";
+import { Helmet } from "react-helmet-async";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { useQuery } from "react-query";
 import { useLocation, useParams } from "react-router-dom";
@@ -12,19 +13,21 @@ import {
   PokemonSpeciesData,
   PokemonTypeColorKey,
 } from "../../assets/types";
+import ErrorPage from "../../components/ErrorPage";
 import Header from "../../components/Header";
 import Loader from "../../components/Loader";
 import { APIBasePath } from "../../utils";
-import PhysicalAndAbilities from "./physicalAndAbilities";
 import PokemonDescription from "./description";
+import EvolutionChart from "./evolutionChart";
+import PhysicalAndAbilities from "./physicalAndAbilities";
 import StatChart from "./statChart";
 import classes from "./styles.module.css";
-import EvolutionChart from "./evolutionChart";
-import { Helmet } from "react-helmet";
-import { isMobile } from "react-device-detect";
 
 const ImageComponent = ({ pokeData }: { pokeData: PokemonData }) => {
   const [isShiny, setIsShiny] = useState(false);
+  const imageUrl =
+    pokeData.sprites.other.home[isShiny ? "front_shiny" : "front_default"];
+
   return (
     <Fragment>
       <div
@@ -41,16 +44,24 @@ const ImageComponent = ({ pokeData }: { pokeData: PokemonData }) => {
           <polygon points="12,3 6,21 21,9 3,9 18,21" />
         </svg>
       </div>
-      <LazyLoadImage
-        className={"m-auto"}
-        src={
-          pokeData.sprites.other.home[isShiny ? "front_shiny" : "front_default"]
-        }
-        width={isMobile ? "100%" : "90%"}
-        alt={pokeData.name}
-        effect={"blur"}
-        placeholderSrc={PokeballLoader}
-      />
+      {!!imageUrl ? (
+        <LazyLoadImage
+          className={"m-auto"}
+          src={
+            pokeData.sprites.other.home[
+              isShiny ? "front_shiny" : "front_default"
+            ]
+          }
+          width={isMobile ? "100%" : "90%"}
+          alt={pokeData.name}
+          effect={"blur"}
+          placeholderSrc={PokeballLoader}
+        />
+      ) : (
+        <div className="text-9xl h-full items-center flex justify-center font-['gb']">
+          ?
+        </div>
+      )}
     </Fragment>
   );
 };
@@ -106,6 +117,10 @@ const Pokemon = (props: any) => {
   const pokemonDataFromLocation = location.state?.data as PokemonData;
   const [pokemonData, setPokemonData] = useState<PokemonData>();
 
+  if (!!!pokemonId || isNaN(Number(pokemonId))) {
+    return <ErrorPage />;
+  }
+
   const fetchData = () => {
     const requestURL = `${APIBasePath}/pokemon/${pokemonId}`;
 
@@ -121,6 +136,7 @@ const Pokemon = (props: any) => {
   const {
     data: spData,
     refetch: refetchSpeciesData,
+    isLoading: speciesDataLoading,
     error: speciesError,
   } = useQuery(`species_${pokemonId}`, fetchSpeciesData, {
     refetchOnWindowFocus: false,
@@ -173,9 +189,14 @@ const Pokemon = (props: any) => {
   const speciesData = spData?.data as PokemonSpeciesData;
 
   if (error || speciesError) {
-    return <>404</>;
+    return <ErrorPage />;
   }
-  if (isLoading || isEmpty(pokemonData) || isEmpty(speciesData)) {
+  if (
+    isLoading ||
+    isEmpty(pokemonData) ||
+    speciesDataLoading ||
+    isEmpty(speciesData)
+  ) {
     return <Loader />;
   }
   const pokemonGenera =
@@ -184,9 +205,11 @@ const Pokemon = (props: any) => {
 
   return (
     <div className={classes["pokemon_detail"]}>
-      <Helmet>
-        <title>{`PG-Dex ${pokemonData.id}.${pokemonData.name}`}</title>
-      </Helmet>
+      {!!pokemonData.name && (
+        <Helmet>
+          <title>{`PG-Dex ${startCase(pokemonData.name)}`}</title>
+        </Helmet>
+      )}
       <BackgroundImage
         imageUrl={pokemonData.sprites.other["official-artwork"].front_default}
       />

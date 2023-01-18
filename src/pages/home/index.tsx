@@ -13,6 +13,7 @@ import Loader from "../../components/Loader";
 import { APIBasePath } from "../../utils";
 import PG_Context from "../../context";
 import React from "react";
+import { Helmet } from "react-helmet-async";
 
 export interface IPokeData {
   count: number;
@@ -168,6 +169,13 @@ const HomePage = () => {
     <div
       className={`${classes["pokemons_list"]} mh-screen flex flex-col w-full m-auto`}
     >
+      <Helmet>
+        <title>PG Dex</title>
+        <meta
+          name="description"
+          content="Welcome to PG Dex, Here you can find out pokemons from PokeAPI"
+        />
+      </Helmet>
       <div className="flex flex-col md:flex-row justify-between items-center mx-1 mb-2 md:mx-5 md:mb-8 ">
         <Header
           isSearchBarNeeded={true}

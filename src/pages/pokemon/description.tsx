@@ -1,5 +1,5 @@
 import { FastAverageColorResult } from "fast-average-color";
-import { uniq } from "lodash";
+import { isEmpty, uniq } from "lodash";
 import { Fragment } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
 import { Autoplay, EffectCards } from "swiper";
@@ -51,7 +51,9 @@ const PokemonDescription = ({
       >
         <Typewriter
           options={{
-            strings: flavor_text,
+            strings: isEmpty(flavor_text)
+              ? "No Information Available"
+              : flavor_text,
             delay: 25,
             deleteSpeed: 10,
             autoStart: true,

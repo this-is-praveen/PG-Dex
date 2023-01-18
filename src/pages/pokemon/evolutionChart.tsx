@@ -192,7 +192,10 @@ const EvolutionChart = ({
 
   const { data: { data } = {}, isLoading } = useQuery(
     `evolution_chain_${evolutionChainId}`,
-    fetchData
+    fetchData,
+    {
+      enabled: !!evolutionChainUrl,
+    }
   );
 
   if (isLoading) {
@@ -200,9 +203,9 @@ const EvolutionChart = ({
   }
 
   const evolutionData = data as PokemonEvolution;
-  const noEvolution = isEmpty(evolutionData.chain.evolves_to);
+  const noEvolution = isEmpty(evolutionData?.chain?.evolves_to);
 
-  if (noEvolution) {
+  if (noEvolution || !evolutionChainUrl) {
     return <div>{speciesData.name} does not evolve</div>;
   }
   const chain = evolutionData.chain;
