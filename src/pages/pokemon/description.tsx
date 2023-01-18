@@ -1,11 +1,8 @@
-import { FastAverageColorResult } from "fast-average-color";
 import { isEmpty, uniq } from "lodash";
 import { Fragment } from "react";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { Autoplay, EffectCards } from "swiper";
 import "swiper/css";
 import "swiper/css/effect-cards";
-import { Swiper, SwiperSlide } from "swiper/react";
 import Typewriter from "typewriter-effect";
 import { PokemonTypeColors } from "../../assets/globals";
 import { PokemonData, PokemonSpeciesData } from "../../assets/types";
