@@ -128,7 +128,9 @@ const Pokemon = (props: any) => {
   };
   const fetchSpeciesData = () => {
     const requestURL =
-      pokemonData?.species.url || `${APIBasePath}/pokemon-species/${pokemonId}`;
+      `${pokemonData?.id}` === pokemonId && pokemonData?.species.url
+        ? pokemonData?.species.url
+        : `${APIBasePath}/pokemon-species/${pokemonId}`;
 
     return axios.get(requestURL);
   };

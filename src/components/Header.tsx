@@ -102,7 +102,7 @@ const Header = (props: IHeader) => {
 
       return (
         <div
-          className={`text-[6rem] ${classes["page_title"]} select-none hover:animate-pulse`}
+          className={`!text-[3rem] ${classes["page_title"]} select-none hover:animate-pulse`}
           onClick={() =>
             navigate(`/pokemon/${pokemonIdsInContext[nextOrPrevIndex]}`, {
               state: { data: {} },
