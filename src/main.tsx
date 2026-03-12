@@ -4,6 +4,7 @@ import { HelmetProvider } from "react-helmet-async";
 import { RouterProvider } from "react-router-dom";
 import "./index.css";
 import router from "./routes";
+import { Analytics } from "@vercel/analytics/react";
 
 const RootElement = document.getElementById("root") as HTMLElement;
 const root = createRoot(RootElement);
@@ -11,6 +12,7 @@ root.render(
   <React.StrictMode>
     <HelmetProvider>
       <RouterProvider router={router} />
+      <Analytics />
     </HelmetProvider>
   </React.StrictMode>
 );
