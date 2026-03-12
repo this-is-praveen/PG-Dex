@@ -45,7 +45,7 @@ const HomePage = () => {
   const [pokemonList, setPokemonList] = useState<IPokemonResult[]>(
     initialData.results.length > 1 && !isEmpty(contextData.pokemonList)
       ? contextData.pokemonList
-      : initialData.results
+      : initialData.results,
   );
   const [pokeData, setPokeData] = useState<IPokeData>(initialData);
 
@@ -58,7 +58,7 @@ const HomePage = () => {
           ...prevState,
           pokemonsData: currentResponse,
           pokemonIds: currentResponse.results.map((data) =>
-            data.url.split("/").at(-2)
+            data.url.split("/").at(-2),
           ),
         }));
 
@@ -70,7 +70,7 @@ const HomePage = () => {
   const { isLoading, error, data } = useQuery(
     "allPokemonData",
     fetchAllPokemons,
-    { enabled: !pokeData.count }
+    { enabled: !pokeData.count },
   );
 
   useEffect(() => {
@@ -87,7 +87,7 @@ const HomePage = () => {
 
   const Next = () => {
     setPokemonList((prevData) =>
-      pokeData.results.slice(0, prevData.length + 24)
+      pokeData.results.slice(0, prevData.length + 24),
     );
     setContextData((prevState: any) => ({
       ...prevState,
@@ -95,37 +95,35 @@ const HomePage = () => {
     }));
   };
 
-  const LayoutScroller = (
-    <InfiniteScroll
-      className="w-full"
-      dataLength={pokemonList.length} //This is important field to render the next data
-      next={Next}
-      hasMore={
-        !!!searchBarRef?.current?.value &&
-        pokemonList.length + 1 < pokeData.count
-      }
-      loader={null}
-      endMessage={
-        isLoading || true ? (
-          <Loader />
-        ) : !pokemonList.length ? (
-          <p style={{ textAlign: "center" }}>
-            <b>No Results : (</b>
-          </p>
-        ) : (
-          <p style={{ textAlign: "center" }}>
-            <b>Yay! You have seen it all</b>
-          </p>
-        )
-      }
-    >
-      <div className="flex flex-wrap justify-around">
-        {pokemonList.map((data) => (
-          <PokemonCard data={data} key={data.name} />
-        ))}
-      </div>
-    </InfiniteScroll>
-  );
+  const LayoutScroller =
+    !pokemonList.length && !isLoading ? (
+      <p style={{ textAlign: "center" }}>
+        <b>No Pokémon(s) Found :(</b>
+      </p>
+    ) : (
+      <InfiniteScroll
+        className="w-full"
+        dataLength={pokemonList.length}
+        next={Next}
+        hasMore={
+          !searchBarRef?.current?.value && pokemonList.length < pokeData.count
+        }
+        loader={<Loader />}
+        endMessage={
+          !isLoading && (
+            <p style={{ textAlign: "center" }}>
+              <b>Yay! You have seen it all</b>
+            </p>
+          )
+        }
+      >
+        <div className="flex flex-wrap justify-around">
+          {pokemonList.map((data) => (
+            <PokemonCard data={data} key={data.name} />
+          ))}
+        </div>
+      </InfiniteScroll>
+    );
 
   const onSearchChange = debounce((event) => {
     const searchBy = event.target.value;
@@ -180,6 +178,9 @@ const HomePage = () => {
         <Header
           isSearchBarNeeded={true}
           onSearchChange={onSearchChange}
+          onSearchEnter={(searchBy: string) => {
+            navigate(`/pokemon/${searchBy}`);
+          }}
           inputRef={searchBarRef}
           headerSearchActionProps={headerSearchActionProps}
           isNextPrevPokemonButtonAvailable={false}

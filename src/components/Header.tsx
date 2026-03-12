@@ -8,6 +8,7 @@ type withSearchBar = {
   isSearchBarNeeded: true;
   isNextPrevPokemonButtonAvailable: false;
   onSearchChange: React.ChangeEventHandler<HTMLInputElement> | undefined;
+  onSearchEnter?: (value: string) => void;
   inputRef: React.LegacyRef<HTMLInputElement> | undefined;
   headerSearchActionProps?: {
     text: string;
@@ -32,7 +33,7 @@ type IHeader =
     );
 
 const Header = (props: IHeader) => {
-  const { isSearchBarNeeded, isNextPrevPokemonButtonAvailable } = props;
+  const { isSearchBarNeeded, isNextPrevPokemonButtonAvailable = true } = props;
 
   const navigate = useNavigate();
   const { contextData } = useContext(PG_Context);
@@ -48,7 +49,7 @@ const Header = (props: IHeader) => {
   );
 
   if (isSearchBarNeeded) {
-    const { inputRef, onSearchChange } = props;
+    const { inputRef, onSearchChange, onSearchEnter } = props;
 
     const SearchBar = (
       <div className="flex justify-center">
@@ -60,6 +61,11 @@ const Header = (props: IHeader) => {
             id="search-pokemon"
             placeholder="Arceus"
             onChange={onSearchChange}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && onSearchEnter) {
+                onSearchEnter((e.target as HTMLInputElement).value);
+              }
+            }}
           />
           {props.headerSearchActionProps && (
             <span
@@ -87,9 +93,8 @@ const Header = (props: IHeader) => {
       if (isEmpty(pokemonIdsInContext)) return <Fragment />;
 
       const indexInpokemonIdsInContext = pokemonIdsInContext.findIndex(
-        (index) => index === pokemonIdFromLocation
+        (index) => index === pokemonIdFromLocation,
       );
-
 
       const hidden = isNext
         ? indexInpokemonIdsInContext > pokemonIdsInContext.length + 1
@@ -102,7 +107,7 @@ const Header = (props: IHeader) => {
 
       return (
         <div
-          className={`!text-[3rem] ${classes["page_title"]} select-none hover:animate-pulse`}
+          className={`!text-[1rem] sm:!text-[3rem] ${classes["page_title"]} select-none hover:animate-pulse`}
           onClick={() =>
             navigate(`/pokemon/${pokemonIdsInContext[nextOrPrevIndex]}`, {
               state: { data: {} },

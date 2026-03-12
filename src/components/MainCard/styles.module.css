@@ -1,0 +1,86 @@
+.imageWrapper {
+  position: relative;
+}
+
+.controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.toggleBtn {
+  cursor: pointer;
+  font-size: 20px;
+  border: none;
+  background: transparent;
+}
+
+.starOn {
+  color: gold;
+}
+
+.starOff {
+  color: gray;
+}
+
+.genderToggle button {
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  background: transparent;
+}
+
+.active {
+  color: #ff4d4f;
+}
+
+.pokemonImage {
+  margin: auto;
+  width: 90%;
+}
+
+.fallback {
+  font-size: 80px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.s_toggleBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+  filter: drop-shadow(0 0 2px silver);
+}
+
+/* Gender */
+
+.genderToggle {
+  display: flex;
+  gap: 6px;
+}
+
+.genderBtn {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  padding: 4px;
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+.genderBtn:hover {
+  opacity: 0.9;
+}
+
+.genderActive {
+  opacity: 1;
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 3px #ff4d4f);
+}

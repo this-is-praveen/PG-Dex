@@ -5,10 +5,9 @@ import {
   LineElement,
   PointElement,
   RadialLinearScale,
-  Tooltip
+  Tooltip,
 } from "chart.js";
 import { Radar } from "react-chartjs-2";
-import { LazyLoadComponent } from "react-lazy-load-image-component";
 import { PokemonStatColors, PokemonStatLabels } from "../../assets/globals";
 import { PokemonStatColorKey } from "../../assets/types";
 import classes from "./styles.module.css";
@@ -20,7 +19,7 @@ const StatChart = (props: { stats: any[] }) => {
     LineElement,
     Filler,
     Tooltip,
-    Legend
+    Legend,
   );
   if (true) {
     const statValue: number[] = props.stats.map((s) => s.base_stat);
@@ -46,47 +45,45 @@ const StatChart = (props: { stats: any[] }) => {
             {baseState}
           </span>
         </div>
-        <LazyLoadComponent>
-          <Radar
-            data={{
-              labels: Object.values(PokemonStatLabels).map((label, index) => [
-                label,
-                props.stats[index].base_stat,
-              ]),
-              datasets: [
-                {
-                  data: props.stats.map((s) => s.base_stat),
-                  pointBackgroundColor: statColor,
-                  pointBorderColor: "rgb(0, 0, 0)",
-                  borderColor: "rgb(0, 0, 0)",
-                  showLine: true,
+        <Radar
+          data={{
+            labels: Object.values(PokemonStatLabels).map((label, index) => [
+              label,
+              props.stats[index].base_stat,
+            ]),
+            datasets: [
+              {
+                data: props.stats.map((s) => s.base_stat),
+                pointBackgroundColor: statColor,
+                pointBorderColor: "rgb(0, 0, 0)",
+                borderColor: "rgb(0, 0, 0)",
+                showLine: true,
+              },
+            ],
+          }}
+          options={{
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: { legend: { display: false } },
+            scales: {
+              r: {
+                min: 0,
+                suggestedMax: maximumLimit,
+                pointLabels: {
+                  color: "#000",
+                  font: { family: "PokemonSolid", size: 14, weight: "bold" },
                 },
-              ],
-            }}
-            options={{
-              responsive: true,
-              maintainAspectRatio: true,
-              plugins: { legend: { display: false } },
-              scales: {
-                r: {
-                  min: 0,
-                  suggestedMax: maximumLimit,
-                  pointLabels: {
-                    color: "#000",
-                    font: { family: "PokemonSolid", size: 14, weight: "400" },
-                  },
-                  grid: { color: "rgba(0, 0, 0, 0.1)" },
-                  animate: true,
-                  ticks: {
-                    display: false,
-                    stepSize: 50,
-                    showLabelBackdrop: false,
-                  },
+                grid: { color: "rgba(0, 0, 0, 0.1)" },
+                animate: true,
+                ticks: {
+                  display: false,
+                  stepSize: 50,
+                  showLabelBackdrop: false,
                 },
               },
-            }}
-          />
-        </LazyLoadComponent>
+            },
+          }}
+        />
       </div>
     );
   }

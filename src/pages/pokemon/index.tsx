@@ -22,47 +22,48 @@ import EvolutionChart from "./evolutionChart";
 import PhysicalAndAbilities from "./physicalAndAbilities";
 import StatChart from "./statChart";
 import classes from "./styles.module.css";
+import { PokemonMainDisplayCard } from "../../components/MainCard/Index";
 
 const ImageComponent = ({ pokeData }: { pokeData: PokemonData }) => {
   const [isShiny, setIsShiny] = useState(false);
-  const imageUrl =
-    pokeData.sprites.other.home[isShiny ? "front_shiny" : "front_default"];
+
+  const spriteHome = pokeData.sprites.other.home;
+  const imageUrl = spriteHome[isShiny ? "front_shiny" : "front_default"];
+
+  const toggleShiny = () => setIsShiny((prev) => !prev);
 
   return (
-    <Fragment>
+    <>
       <div
         className={`flex justify-end ${
           classes[isShiny ? "starOn" : "starOff"]
         }`}
       >
         <svg
-          className={classes["star_icon"]}
+          className={classes.star_icon}
           xmlns="http://www.w3.org/2000/svg"
           version="1.1"
-          onClick={() => setIsShiny((prevState) => !prevState)}
+          onClick={toggleShiny}
         >
           <polygon points="12,3 6,21 21,9 3,9 18,21" />
         </svg>
       </div>
-      {!!imageUrl ? (
+
+      {imageUrl ? (
         <LazyLoadImage
-          className={"m-auto"}
-          src={
-            pokeData.sprites.other.home[
-              isShiny ? "front_shiny" : "front_default"
-            ]
-          }
+          className="m-auto"
+          src={imageUrl}
           width={isMobile ? "100%" : "90%"}
           alt={pokeData.name}
-          effect={"blur"}
+          effect="blur"
           placeholderSrc={PokeballLoader}
         />
       ) : (
-        <div className="text-9xl h-full items-center flex justify-center font-['gb']">
+        <div className="text-9xl h-full flex items-center justify-center font-['gb']">
           ?
         </div>
       )}
-    </Fragment>
+    </>
   );
 };
 
@@ -117,7 +118,7 @@ const Pokemon = (props: any) => {
   const pokemonDataFromLocation = location.state?.data as PokemonData;
   const [pokemonData, setPokemonData] = useState<PokemonData>();
 
-  if (!!!pokemonId || isNaN(Number(pokemonId))) {
+  if (!!!pokemonId) {
     return <ErrorPage />;
   }
 
@@ -142,7 +143,6 @@ const Pokemon = (props: any) => {
     error: speciesError,
   } = useQuery(`species_${pokemonId}`, fetchSpeciesData, {
     refetchOnWindowFocus: false,
-    enabled: +pokemonId < 10000,
   });
   const { data, isLoading, error, refetch } = useQuery(
     `pokemon_${pokemonId}`,
@@ -150,7 +150,7 @@ const Pokemon = (props: any) => {
     {
       refetchOnWindowFocus: false,
       enabled: isEmpty(pokemonDataFromLocation),
-    }
+    },
   );
 
   useEffect(() => {
@@ -212,13 +212,15 @@ const Pokemon = (props: any) => {
           <title>{`PG-Dex ${startCase(pokemonData.name)}`}</title>
         </Helmet>
       )}
-      <BackgroundImage
-        imageUrl={pokemonData.sprites.other["official-artwork"].front_default}
-      />
+      {!isMobile && (
+        <BackgroundImage
+          imageUrl={pokemonData.sprites.other["official-artwork"].front_default}
+        />
+      )}
       <div className="flex justify-center items-center mb-2 md:mb-8 ">
-        <Header isNextPrevPokemonButtonAvailable={true} />
+        <Header isNextPrevPokemonButtonAvailable />
       </div>
-      <div className="flex justify- flex-col md:flex-row">
+      <div className="md:mt-16 sm:md-4 flex justify- flex-col md:flex-row">
         <div
           className={`${classes["pokemon_image_section"]} flex relative flex-col w-full md:w-3/6`}
         >
@@ -229,7 +231,7 @@ const Pokemon = (props: any) => {
           >
             <span style={{ backgroundColor: color1 }}># {pokemonId}</span>
           </div>
-          <ImageComponent pokeData={pokemonData} />
+          <PokemonMainDisplayCard pokeData={pokemonData} />
         </div>
         <div
           className={`${classes["pokemon_detail_section"]} flex w-full md:w-3/6 justify-center`}
